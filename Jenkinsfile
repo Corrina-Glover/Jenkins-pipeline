@@ -94,10 +94,4 @@ pipeline {
             }
         }
     }
-
-    stage('Complete') {
-        steps {
-            echo 'Complete...'
-        }
-    }
 }
