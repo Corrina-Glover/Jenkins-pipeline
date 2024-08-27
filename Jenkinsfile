@@ -77,8 +77,7 @@ pipeline {
         always {
             script {
                 def logFile = 'file.log',
-                def logContent = currentBuild.rawBuild.getLog().join('\n')
-                writeFile file: logFile, text: logContent
+                writeFile file: logFile, text: currentBuild.rawBuild.getLog().join('\n')
 
                 emailext(
                     to: 'corrinaglover@gmail.com',
