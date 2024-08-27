@@ -76,7 +76,7 @@ pipeline {
     post {
         always {
             script {
-                def logFile = 'file.log',
+                def logFile = 'file.log'
                 writeFile file: logFile, text: currentBuild.rawBuild.getLog().join('\n')
 
                 emailext(
@@ -93,10 +93,11 @@ pipeline {
                 )
             }
         }
-        stage('Complete') {
-            steps {
-                echo "Complete..."
-            }
+    }
+
+    stage('Complete') {
+        steps {
+            echo 'Complete...'
         }
     }
 }
