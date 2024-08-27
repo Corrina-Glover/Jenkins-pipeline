@@ -6,8 +6,8 @@ pipeline {
             steps {
                 script {
                     echo 'Stage 1: Build'
-                    echo 'Task: Compile and package the code'
-                    echo 'Tool: Maven or Gradle'
+                    echo 'Task: Build the code using build automation tool'
+                    echo 'Tool: Maven'
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
                 script {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
-                    echo 'Tool: OWASP Dependency-Check or Snyk'
+                    echo 'Tool: Snyk'
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
                 script {
                     echo 'Stage 5: Deploy to Staging'
                     echo 'Task: Deploy the application to a staging environment'
-                    echo 'Tool: AWS CodeDeploy or Kubernetes'
+                    echo 'Tool: AWS EC2 instance'
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
                 script {
                     echo 'Stage 6: Integration Tests on Staging'
                     echo 'Task: Run integration tests in the staging environment'
-                    echo 'Tool: Selenium or Postman'
+                    echo 'Tool: Selenium'
                 }
             }
         }
@@ -67,21 +67,32 @@ pipeline {
                 script {
                     echo 'Stage 7: Deploy to Production'
                     echo 'Task: Deploy the application to the production server'
-                    echo 'Tool: AWS CodeDeploy or Terraform'
+                    echo 'Tool: AWS EC2 instance'
                 }
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed.'
-        }
         always {
-            echo 'Cleaning up...'
+            script {
+                def logFile = 'file.log',
+                def logContent = currentBuild.rawBuild.getLog().join('\n')
+                writeFile file: logFile, text: logContent
+
+                emailext(
+                    to: 'corrinaglover@gmail.com',
+                    subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${currentBuild.result}",
+                    body: """
+                    Build Status: ${currentBuild.result}
+                    Job: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+
+                    Please find the build log attached.
+                    """,
+                    attachmentPattern: logFile
+                )
+            }
         }
     }
 }
