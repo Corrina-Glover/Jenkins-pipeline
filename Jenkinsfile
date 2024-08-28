@@ -20,34 +20,6 @@ pipeline {
                     echo 'Tools: JUnit, TestNG, Selenium'
                 }
             }
-            post {
-                always {
-                    script {
-                        def buildStatus = currentBuild.result ?: 'SUCCESS'
-                        def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Unit and Integration Tests ${buildStatus}"
-                        
-                        // Fetch the console output
-                        def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
-
-                        // Create the email body with console output
-                        def body = """
-                        Unit and Integration Tests Status: ${buildStatus}
-                        Job: ${env.JOB_NAME}
-                        Build Number: ${env.BUILD_NUMBER}
-                        
-                        Console Output:
-                        ${consoleOutput}
-                        """
-
-                        // Send an email with console output
-                        mail(
-                            to: 'corrinaglover@gmail.com', 
-                            subject: subject,
-                            body: body
-                        )
-                    }
-                }
-            }
         }
 
         stage('Code Analysis') {
@@ -66,34 +38,6 @@ pipeline {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
                     echo 'Tool: Snyk'
-                }
-            }
-            post {
-                always {
-                    script {
-                        def buildStatus = currentBuild.result ?: 'SUCCESS'
-                        def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Security Scan ${buildStatus}"
-                        
-                        // Fetch the console output
-                        def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
-
-                        // Create the email body with console output
-                        def body = """
-                        Security Scan Status: ${buildStatus}
-                        Job: ${env.JOB_NAME}
-                        Build Number: ${env.BUILD_NUMBER}
-                        
-                        Console Output:
-                        ${consoleOutput}
-                        """
-
-                        // Send an email with console output
-                        mail(
-                            to: 'corrinaglover@gmail.com', 
-                            subject: subject,
-                            body: body
-                        )
-                    }
                 }
             }
         }
@@ -133,25 +77,18 @@ pipeline {
             script {
                 def buildStatus = currentBuild.result ?: 'SUCCESS'
                 def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${buildStatus}"
-                
-                // Fetch the console output
-                def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
-
-                // Create the email body with console output
                 def body = """
                 Build Status: ${buildStatus}
                 Job: ${env.JOB_NAME}
                 Build Number: ${env.BUILD_NUMBER}
-                
-                Console Output:
-                ${consoleOutput}
                 """
 
                 // Send an email with console output
-                mail(
+                emailext (
                     to: 'corrinaglover@gmail.com',
                     subject: subject,
-                    body: body
+                    body: body,
+                    attachLog: true  // Attach the full build log
                 )
             }
         }
