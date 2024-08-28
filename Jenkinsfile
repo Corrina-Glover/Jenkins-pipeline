@@ -8,6 +8,7 @@ pipeline {
                     echo 'Stage 1: Build'
                     echo 'Task: Build the code using build automation tool'
                     echo 'Tool: Maven'
+                    sh 'echo "Build stage log" > build.log'
                 }
             }
         }
@@ -18,10 +19,7 @@ pipeline {
                     echo 'Stage 2: Unit and Integration Tests'
                     echo 'Task: Run unit tests and integration tests'
                     echo 'Tools: JUnit, TestNG, Selenium'
-                    
-                    // Capture stage-specific log
-                    def logFile = 'unit-integration-tests.log'
-                    writeFile file: logFile, text: "Unit and Integration Tests stage log\n${currentBuild.rawBuild.getLog().join('\n')}"
+                    sh 'echo "Unit and Integration Tests stage log" > unit-integration-tests.log'
                 }
             }
             post {
@@ -38,7 +36,7 @@ pipeline {
 
                             Please find the logs attached.
                             """,
-                            attachmentPattern: 'unit-integration-tests.log'
+                            attachmentsPattern: 'unit-integration-tests.log'
                         )
                     }
                 }
@@ -51,6 +49,7 @@ pipeline {
                     echo 'Stage 3: Code Analysis'
                     echo 'Task: Analyze code quality and adherence to industry standards'
                     echo 'Tool: SonarQube'
+                    sh 'echo "Code Analysis stage log" > code-analysis.log'
                 }
             }
         }
@@ -61,10 +60,7 @@ pipeline {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
                     echo 'Tool: Snyk'
-                    
-                    // Capture stage-specific log
-                    def logFile = 'security-scan.log'
-                    writeFile file: logFile, text: "Security Scan stage log\n${currentBuild.rawBuild.getLog().join('\n')}"
+                    sh 'echo "Security Scan stage log" > security-scan.log'
                 }
             }
             post {
@@ -81,7 +77,7 @@ pipeline {
 
                             Please find the logs attached.
                             """,
-                            attachmentPattern: 'security-scan.log'
+                            attachmentsPattern: 'security-scan.log'
                         )
                     }
                 }
@@ -115,6 +111,26 @@ pipeline {
                     echo 'Task: Deploy the application to the production server'
                     echo 'Tool: AWS EC2 instance'
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                sh 'echo "Overall build log" > overall-build.log'
+                emailext(
+                    to: 'corrinaglover@gmail.com',
+                    subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${currentBuild.result}",
+                    body: """
+                    Build Status: ${currentBuild.result}
+                    Job: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+
+                    Please find the build log attached.
+                    """,
+                    attachmentsPattern: 'overall-build.log'
+                )
             }
         }
     }
