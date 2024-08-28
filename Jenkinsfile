@@ -25,14 +25,21 @@ pipeline {
                     script {
                         def buildStatus = currentBuild.result ?: 'SUCCESS'
                         def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Unit and Integration Tests ${buildStatus}"
+                        
+                        // Fetch the console output
+                        def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
+
+                        // Create the email body with console output
                         def body = """
                         Unit and Integration Tests Status: ${buildStatus}
                         Job: ${env.JOB_NAME}
                         Build Number: ${env.BUILD_NUMBER}
-                        Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/CONSOLE
+                        
+                        Console Output:
+                        ${consoleOutput}
                         """
 
-                        // Send an email
+                        // Send an email with console output
                         mail(
                             to: 'corrinaglover@gmail.com', 
                             subject: subject,
@@ -66,14 +73,21 @@ pipeline {
                     script {
                         def buildStatus = currentBuild.result ?: 'SUCCESS'
                         def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Security Scan ${buildStatus}"
+                        
+                        // Fetch the console output
+                        def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
+
+                        // Create the email body with console output
                         def body = """
                         Security Scan Status: ${buildStatus}
                         Job: ${env.JOB_NAME}
                         Build Number: ${env.BUILD_NUMBER}
-                        Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/console
+                        
+                        Console Output:
+                        ${consoleOutput}
                         """
 
-                        // Send an email
+                        // Send an email with console output
                         mail(
                             to: 'corrinaglover@gmail.com', 
                             subject: subject,
@@ -119,14 +133,21 @@ pipeline {
             script {
                 def buildStatus = currentBuild.result ?: 'SUCCESS'
                 def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${buildStatus}"
+                
+                // Fetch the console output
+                def consoleOutput = sh(script: "curl -s ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/consoleText", returnStdout: true).trim()
+
+                // Create the email body with console output
                 def body = """
                 Build Status: ${buildStatus}
                 Job: ${env.JOB_NAME}
                 Build Number: ${env.BUILD_NUMBER}
-                Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/console
+                
+                Console Output:
+                ${consoleOutput}
                 """
 
-                // Send an email
+                // Send an email with console output
                 mail(
                     to: 'corrinaglover@gmail.com',
                     subject: subject,
