@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -8,7 +9,6 @@ pipeline {
                     echo 'Stage 1: Build'
                     echo 'Task: Build the code using build automation tool'
                     echo 'Tool: Maven'
-                    sh 'echo "Build stage log" > build.log'
                 }
             }
         }
@@ -19,26 +19,6 @@ pipeline {
                     echo 'Stage 2: Unit and Integration Tests'
                     echo 'Task: Run unit tests and integration tests'
                     echo 'Tools: JUnit, TestNG, Selenium'
-                    sh 'echo "Unit and Integration Tests stage log" > unit-integration-tests.log'
-                }
-            }
-            post {
-                always {
-                    script {
-                        emailext(
-                            to: 'corrinaglover@gmail.com',
-                            subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Unit and Integration Tests ${currentBuild.result}",
-                            body: """
-                            Stage: Unit and Integration Tests
-                            Build Status: ${currentBuild.result}
-                            Job: ${env.JOB_NAME}
-                            Build Number: ${env.BUILD_NUMBER}
-
-                            Please find the logs attached.
-                            """,
-                            attachmentsPattern: 'unit-integration-tests.log'
-                        )
-                    }
                 }
             }
         }
@@ -49,7 +29,6 @@ pipeline {
                     echo 'Stage 3: Code Analysis'
                     echo 'Task: Analyze code quality and adherence to industry standards'
                     echo 'Tool: SonarQube'
-                    sh 'echo "Code Analysis stage log" > code-analysis.log'
                 }
             }
         }
@@ -60,26 +39,6 @@ pipeline {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
                     echo 'Tool: Snyk'
-                    sh 'echo "Security Scan stage log" > security-scan.log'
-                }
-            }
-            post {
-                always {
-                    script {
-                        emailext(
-                            to: 'corrinaglover@gmail.com',
-                            subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Security Scan ${currentBuild.result}",
-                            body: """
-                            Stage: Security Scan
-                            Build Status: ${currentBuild.result}
-                            Job: ${env.JOB_NAME}
-                            Build Number: ${env.BUILD_NUMBER}
-
-                            Please find the logs attached.
-                            """,
-                            attachmentsPattern: 'security-scan.log'
-                        )
-                    }
                 }
             }
         }
@@ -114,23 +73,23 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             script {
-                sh 'echo "Overall build log" > overall-build.log'
-                emailext(
-                    to: 'corrinaglover@gmail.com',
-                    subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${currentBuild.result}",
-                    body: """
-                    Build Status: ${currentBuild.result}
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${buildStatus}"
+                def body = """
+                Build Status: ${buildStatus}
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                """
 
-                    Please find the build log attached.
-                    """,
-                    attachmentsPattern: 'overall-build.log'
-                )
+                // Send an email
+                mail(
+                    to: 'corrinaglover@gmail.com',
+                    subject: subject,
+                    body: body
+                 )
             }
         }
     }
