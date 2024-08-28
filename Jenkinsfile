@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -21,6 +20,26 @@ pipeline {
                     echo 'Tools: JUnit, TestNG, Selenium'
                 }
             }
+            post {
+                always {
+                    script {
+                        def buildStatus = currentBuild.result ?: 'SUCCESS'
+                        def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Unit and Integration Tests ${buildStatus}"
+                        def body = """
+                        Unit and Integration Tests Status: ${buildStatus}
+                        Job: ${env.JOB_NAME}
+                        Build Number: ${env.BUILD_NUMBER}
+                        """
+
+                        // Send an email
+                        mail(
+                            to: 'recipient@example.com', // Replace with the desired email address
+                            subject: subject,
+                            body: body
+                        )
+                    }
+                }
+            }
         }
 
         stage('Code Analysis') {
@@ -39,6 +58,26 @@ pipeline {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
                     echo 'Tool: Snyk'
+                }
+            }
+            post {
+                always {
+                    script {
+                        def buildStatus = currentBuild.result ?: 'SUCCESS'
+                        def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Security Scan ${buildStatus}"
+                        def body = """
+                        Security Scan Status: ${buildStatus}
+                        Job: ${env.JOB_NAME}
+                        Build Number: ${env.BUILD_NUMBER}
+                        """
+
+                        // Send an email
+                        mail(
+                            to: 'recipient@example.com', // Replace with the desired email address
+                            subject: subject,
+                            body: body
+                        )
+                    }
                 }
             }
         }
@@ -89,7 +128,7 @@ pipeline {
                     to: 'corrinaglover@gmail.com',
                     subject: subject,
                     body: body
-                 )
+                )
             }
         }
     }
