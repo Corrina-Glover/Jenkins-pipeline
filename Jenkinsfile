@@ -72,25 +72,23 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             script {
-                def logFile = 'file.log'
-                writeFile file: logFile, text: currentBuild.rawBuild.getLog().join('\n')
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${buildStatus}"
+                def body = """
+                Build Status: ${buildStatus}
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                """
 
-                emailext(
+                // Send an email
+                mail(
                     to: 'corrinaglover@gmail.com',
-                    subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${currentBuild.result}",
-                    body: """
-                    Build Status: ${currentBuild.result}
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-
-                    Please find the build log attached.
-                    """,
-                    attachmentPattern: logFile
-                )
+                    subject: subject,
+                    body: body
+                 )
             }
         }
     }
