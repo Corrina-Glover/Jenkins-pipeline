@@ -29,6 +29,7 @@ pipeline {
                         Unit and Integration Tests Status: ${buildStatus}
                         Job: ${env.JOB_NAME}
                         Build Number: ${env.BUILD_NUMBER}
+                        Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/CONSOLE
                         """
 
                         // Send an email
@@ -69,6 +70,7 @@ pipeline {
                         Security Scan Status: ${buildStatus}
                         Job: ${env.JOB_NAME}
                         Build Number: ${env.BUILD_NUMBER}
+                        Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/console
                         """
 
                         // Send an email
@@ -121,6 +123,7 @@ pipeline {
                 Build Status: ${buildStatus}
                 Job: ${env.JOB_NAME}
                 Build Number: ${env.BUILD_NUMBER}
+                Console Output: ${JENKINS_URL}job/${JOB_NAME}/${BUILD_NUMBER}/console
                 """
 
                 // Send an email
