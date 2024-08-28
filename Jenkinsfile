@@ -33,7 +33,7 @@ pipeline {
 
                         // Send an email
                         mail(
-                            to: 'recipient@example.com', // Replace with the desired email address
+                            to: 'corrinaglover@gmail.com', 
                             subject: subject,
                             body: body
                         )
@@ -73,7 +73,7 @@ pipeline {
 
                         // Send an email
                         mail(
-                            to: 'recipient@example.com', // Replace with the desired email address
+                            to: 'corrinaglover@gmail.com', 
                             subject: subject,
                             body: body
                         )
