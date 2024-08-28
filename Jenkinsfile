@@ -18,6 +18,29 @@ pipeline {
                     echo 'Stage 2: Unit and Integration Tests'
                     echo 'Task: Run unit tests and integration tests'
                     echo 'Tools: JUnit, TestNG, Selenium'
+                    
+                    // Capture stage-specific log
+                    def logFile = 'unit-integration-tests.log'
+                    writeFile file: logFile, text: "Unit and Integration Tests stage log\n${currentBuild.rawBuild.getLog().join('\n')}"
+                }
+            }
+            post {
+                always {
+                    script {
+                        emailext(
+                            to: 'corrinaglover@gmail.com',
+                            subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Unit and Integration Tests ${currentBuild.result}",
+                            body: """
+                            Stage: Unit and Integration Tests
+                            Build Status: ${currentBuild.result}
+                            Job: ${env.JOB_NAME}
+                            Build Number: ${env.BUILD_NUMBER}
+
+                            Please find the logs attached.
+                            """,
+                            attachmentPattern: 'unit-integration-tests.log'
+                        )
+                    }
                 }
             }
         }
@@ -38,6 +61,29 @@ pipeline {
                     echo 'Stage 4: Security Scan'
                     echo 'Task: Scan the code for security vulnerabilities'
                     echo 'Tool: Snyk'
+                    
+                    // Capture stage-specific log
+                    def logFile = 'security-scan.log'
+                    writeFile file: logFile, text: "Security Scan stage log\n${currentBuild.rawBuild.getLog().join('\n')}"
+                }
+            }
+            post {
+                always {
+                    script {
+                        emailext(
+                            to: 'corrinaglover@gmail.com',
+                            subject: "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - Security Scan ${currentBuild.result}",
+                            body: """
+                            Stage: Security Scan
+                            Build Status: ${currentBuild.result}
+                            Job: ${env.JOB_NAME}
+                            Build Number: ${env.BUILD_NUMBER}
+
+                            Please find the logs attached.
+                            """,
+                            attachmentPattern: 'security-scan.log'
+                        )
+                    }
                 }
             }
         }
@@ -69,26 +115,6 @@ pipeline {
                     echo 'Task: Deploy the application to the production server'
                     echo 'Tool: AWS EC2 instance'
                 }
-            }
-        }
-    }
-    post {
-        always {
-            script {
-                def buildStatus = currentBuild.result ?: 'SUCCESS'
-                def subject = "${env.JOB_NAME} - Build ${env.BUILD_NUMBER} - ${buildStatus}"
-                def body = """
-                Build Status: ${buildStatus}
-                Job: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER}
-                """
-
-                // Send an email
-                mail(
-                    to: 'corrinaglover@gmail.com',
-                    subject: subject,
-                    body: body
-                 )
             }
         }
     }
